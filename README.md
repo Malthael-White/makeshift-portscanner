@@ -5,3 +5,6 @@ This scripts purpose is to scan a networks IP address or Host Address in order t
  This is still being worked on
  
  Python packages required: nmap, prettytable, tkinter, socket
+
+PLEASE BE AWARE THAT ANY ILLEGAL ACTIVITY DONE USING THIS SOFTWARE IS A VIOLATION AND CAN LEAD TO JAIL TIME! THE CREATOR OF THIS SOFTWARE IS NOT LIABLE NOR RESPONSIBLE FOR ANY MALICIOUS WRONGDOINGS THAT MAY OCCUR
+
