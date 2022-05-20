@@ -1,8 +1,3 @@
-# This scripts purpose is to scan a networks IP address or Host Address in order to return a set of ports that are open.
-# Given input from the user, either a IP-Address or Host Address with a given port number or range, it should output a series of details
-# involving the "Host","Host State","Host Address","Protocol","Port", and "Port State" 
-
-
 # Socket Standard Library 
 import socket
 
@@ -11,6 +6,9 @@ import socket
 import nmap # Third Party Library to conduct scanning
 from prettytable import PrettyTable # Third Party Library to organize data
 from tkinter import *  # Third Part Library to craft a Graphical Users Interface
+#from tkinter import ttk
+
+from tkinter.filedialog import asksaveasfile
 #from tkinter import filedialog 
 
 # Start variable for initializing the PrettyTable
@@ -116,17 +114,22 @@ def warning_command():
     warning.grid(row=0, column=0, padx=5, pady=5, sticky='w')
     
 #Function to create a txt file and write the output of the textbox to the file
-def file_command():
-    file = open("Port_Scan.log", "w")
-    file.write(output.get(1.0, END))
-    file.close()
-    
+#def file_command():
+ #   file = open("Port_Scan.log", "w")
+  #  file.write(output.get(1.0, END))
+   # file.close()
+
+def save_command():
+    files = [("All Files", "*.*"),
+             ("Log Files", "*.log"),
+             ("Text Document", "*.txt")]
+    file = asksaveasfile(filetypes = files, defaultextension = files)
 
 File_Menu = Menu(my_Menu)
 #Create a label for the menu called File
 my_Menu.add_cascade(label="File", menu=File_Menu)
 #Create a command under the file called save that will trigger the function file_command
-File_Menu.add_command(label="Save", command=file_command)
+File_Menu.add_command(label="Save", command=save_command)
 #Separator between Save and Exit
 File_Menu.add_separator()
 #Create a command under the file called exit that will close the main application window
