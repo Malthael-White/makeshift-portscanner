@@ -1,0 +1,153 @@
+
+# This scripts purpose is to scan a networks IP address or Host Address in order to return a set of ports that are open.
+# Given input from the user, either a IP-Address or Host Address with a given port number or range, it should output a series of details
+# involving the "Host","Host State","Host Address","Protocol","Port", and "Port State" 
+
+
+# Socket Standard Library 
+import socket
+
+
+# Third Party Libraries
+import nmap # Third Party Library to conduct scanning
+from prettytable import PrettyTable # Third Party Library to organize data
+from tkinter import *  # Third Part Library to craft a Graphical Users Interface
+#from tkinter import filedialog 
+
+# Start variable for initializing the PrettyTable
+prettytable = PrettyTable()
+
+#Initialziing the first Application Window for Tkinter GUI
+root = Tk()
+
+# Changes the title of the Application Window
+root.title("Port Scanner")
+
+#Function to begin the port scan
+def scan_command():
+    #Get the input from the User in the IP and Host from the Input field
+    scanIP = IP_Entry.get()
+    
+    #Get the input from the User from the port and port-range Input field
+    scanPort = Port_Entry.get()
+    
+    #Variable switch from scanIP to host_address
+    host_address = scanIP
+    
+    #Variable switch from scanPort to port_range
+    port_range = scanPort
+    
+    #convert the host address to IP Address
+    ip_address = socket.gethostbyname(host_address)
+ 
+    #Initializing the port scanner
+    nm = nmap.PortScanner()
+    
+    #Begin the scan of the ip address and the ports
+    nm.scan(ip_address, port_range)
+    
+    #For loop to search and print out all the information about the ports
+    for host in nm.all_hosts():
+        
+        #For loop to find the protocols
+        for protocol in nm[host].all_protocols(): # Finds the protocol either if it is UDP or TCP
+            
+            #Get all the protocols for TCP/UDP
+            lport = nm[host][protocol].keys() 
+           
+            for port in lport:
+                #Add the data to the table            
+                prettytable.add_row([host,nm[host].state(),host_address,protocol,port, nm[host][protocol][port]['state']])    
+    #List the field names
+    prettytable.field_names = ["Host","Host State","Host Address","Protocol","Port", "Port State"]
+    
+    #Get the data for each field and display it in the table
+    tableOutput = prettytable.get_string(fields=["Host","Host State","Host Address","Protocol","Port", "Port State"])
+    #Output the data to the textbox
+    output.insert(END, tableOutput)
+
+
+
+#displaying the label of IP_HostValue
+IP_HostValue = Label(root, anchor='w', text="IP Address or Host Address: ")
+IP_HostValue.grid(row=0, column=0, padx=5, pady=1, sticky='w')
+
+#Input box for the IP-Address or Host-Address
+strValue = StringVar()
+strValue = ''
+IP_Entry=Entry(root,textvar=strValue,width=50)
+IP_Entry.grid(row=0, column=1, padx=5, pady=5, sticky='w')
+
+#displaying the label of the portValue
+PortValue = Label(root, anchor='w', text="Port Range or Port Number: ")
+PortValue.grid(row=1, column=0, padx=5, pady=5, sticky='w')
+
+#Input box for the Port or Port-Range
+strValue1 = StringVar()
+strValue1 = ''
+Port_Entry=Entry(root,textvar=strValue1,width=50)
+Port_Entry.grid(row=1, column=1, padx=5, pady=5, sticky='w')
+
+#Button to call the function scan_command
+buttonScan = Button(root, text='Begin scan', command=scan_command, width=10, bg ='gray', fg='white', activebackground='black', activeforeground='green')
+buttonScan.grid(row=4, column=1, padx=5, pady=5, sticky='w')
+
+#Initializing the text box for output
+output = Text(root)
+output.grid(row=5, column=1, padx=5, pady=5, sticky='w')
+
+#Initializing the menu for the GUI
+my_Menu = Menu(root)
+root.config(menu=my_Menu)
+
+#Function to create another window application and display the labels of the examples
+def Example_command():
+    rootExp = Tk()
+    rootExp.title("Example")
+    IP_Exp = Label(rootExp, anchor='w', text="Example IP Address and Host Address: 127.0.0.1 or example.org")
+    IP_Exp.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+    PortExp = Label(rootExp, anchor='w', text="Example Port-Range and Port Number: 1-100 or 80")
+    PortExp.grid(row=1, column=0, padx=5, pady=5, sticky='w') 
+    
+#Function to create another window application and display the label of the important notice
+def warning_command():
+    rootExp = Tk()
+    rootExp.title("Important Notice")    
+    warning = Label(rootExp, anchor='w', text="PLEASE BE AWARE THAT ANY ILLEGAL ACTIVITY DONE USING THIS SOFTWARE\n IS A VIOLATION AND CAN LEAD TO JAIL TIME! THE CREATOR\n OF THIS SOFTWARE IS NOT LIABBLE NOR RESPONSIBLE FOR ANY MALICIOUS WRONGDOINGS\n THAT MAY OCCUR")
+    warning.grid(row=0, column=0, padx=5, pady=5, sticky='w')
+    
+#Function to create a txt file and write the output of the textbox to the file
+def file_command():
+    file = open("Port_Scan.log", "w")
+    file.write(output.get(1.0, END))
+    file.close()
+    
+
+File_Menu = Menu(my_Menu)
+#Create a label for the menu called File
+my_Menu.add_cascade(label="File", menu=File_Menu)
+#Create a command under the file called save that will trigger the function file_command
+File_Menu.add_command(label="Save", command=file_command)
+#Separator between Save and Exit
+File_Menu.add_separator()
+#Create a command under the file called exit that will close the main application window
+File_Menu.add_command(label="Exit", command = root.quit)
+
+
+warning_Menu = Menu(my_Menu)
+#Create a label for the menu called important
+my_Menu.add_cascade(label="Important", menu=warning_Menu)
+#Create a command under important called warning that will trigger the function warning_command
+warning_Menu.add_command(label="Warning", command=warning_command)
+
+
+Example_Menu = Menu(my_Menu)
+#Create a label for the menu called Help
+my_Menu.add_cascade(label="Help", menu=Example_Menu)
+#Create a command under Help called example that will trigger the function Example_command
+Example_Menu.add_command(label="Example", command=Example_command)
+
+
+
+#The Application window will stay open until closed
+root.mainloop()
